@@ -7,7 +7,7 @@ set(CMAKE_CUDA_STANDARD 14)
 option(CMAKE_EXPORT_COMPILE_COMMANDS "Generate compile_commands.json" ON) # for clang-tidy
 
 # Check if CUDA is available quietly (don't log warnings, if not available)
-find_package(CUDA QUIET)
+find_package(CUDAToolkit QUIET)
 
 # Include directories
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cuda ${CMAKE_CURRENT_SOURCE_DIR}/cpu)
@@ -15,19 +15,21 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cuda ${CMAKE_CURRENT_SOURCE_DIR}
 add_executable(cc_code src/main.cc)
 
 
-if(CUDA_FOUND)
+if(CUDAToolkit_FOUND)
     enable_language(CUDA)
     message(STATUS "CUDA found. Enabling CUDA support.")
 
     add_compile_definitions(CUDA_AVAILABLE)
-    
+
+    # Set CUDA architectures globally (for all targets using CUDA)
+    set(CMAKE_CUDA_ARCHITECTURES "all")
+
     # Add the CUDA library
     add_library(my_cuda_library STATIC cuda/kernel.cu)
 
     # Set CUDA compilation options
     set_target_properties(my_cuda_library PROPERTIES
         CUDA_SEPARABLE_COMPILATION ON
-        CUDA_ARCHITECTURES "all"
     )
 
     # Include directories for the library
@@ -35,6 +37,9 @@ if(CUDA_FOUND)
 
     # Link the CUDA library with the executable
     target_link_libraries(cc_code PRIVATE my_cuda_library)
+
+    # Set CUDA architectures for cc_code explicitly
+    set_target_properties(cc_code PROPERTIES CUDA_ARCHITECTURES "all")
 else()
     message(STATUS "CUDA not found. Skipping CUDA support.")
 endif()

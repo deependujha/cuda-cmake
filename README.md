@@ -4,6 +4,26 @@
 
 ---
 
+## Setup
+
+```bash
+# clone and cd into it
+git clone https://github.com/deependujha/cuda-cmake.git
+cd cuda-cmake
+
+# create build/ dir
+mkdir build && cd build
+
+# generate build files
+cmake ..
+cmake --build .
+
+# run executable
+./cc_code
+```
+
+---
+
 ## Using CMAKE to conditionally compile cuda kernels 🔥
 
 - Use `ifdef` and `ifndef` preprocessor directives, while including header files or calling functions.
