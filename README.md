@@ -51,26 +51,29 @@ cmake --build .
 
 ```cmake
 # Check if CUDA is available quietly (don't log warnings, if not available)
-find_package(CUDA QUIET)
+find_package(CUDAToolkit QUIET)
 ```
 
 - If `CUDA_FOUND`, define identifier, build library and link to executable.
 
 ```cmake
-if(CUDA_FOUND)
+if(CUDAToolkit_FOUND)
     enable_language(CUDA)
+    message(STATUS "======================================")
     message(STATUS "CUDA found. Enabling CUDA support.")
+    message(STATUS "======================================")
 
-    # defining identifier, will be used in cc code for conditional compilation
     add_compile_definitions(CUDA_AVAILABLE)
-    
+
+    # Set CUDA architectures globally (for all targets using CUDA)
+    set(CMAKE_CUDA_ARCHITECTURES "all")
+
     # Add the CUDA library
     add_library(my_cuda_library STATIC cuda/kernel.cu)
 
     # Set CUDA compilation options
     set_target_properties(my_cuda_library PROPERTIES
         CUDA_SEPARABLE_COMPILATION ON
-        CUDA_ARCHITECTURES "all"
     )
 
     # Include directories for the library
@@ -78,9 +81,12 @@ if(CUDA_FOUND)
 
     # Link the CUDA library with the executable
     target_link_libraries(cc_code PRIVATE my_cuda_library)
+
+    # Set CUDA architectures for cc_code explicitly
+    set_target_properties(cc_code PROPERTIES CUDA_ARCHITECTURES "all")
 else()
+    message(STATUS "======================================")
     message(STATUS "CUDA not found. Skipping CUDA support.")
+    message(STATUS "======================================")
 endif()
 ```
-
----
