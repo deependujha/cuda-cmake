@@ -17,7 +17,9 @@ add_executable(cc_code src/main.cc)
 
 if(CUDAToolkit_FOUND)
     enable_language(CUDA)
+    message(STATUS "======================================")
     message(STATUS "CUDA found. Enabling CUDA support.")
+    message(STATUS "======================================")
 
     add_compile_definitions(CUDA_AVAILABLE)
 
@@ -41,7 +43,9 @@ if(CUDAToolkit_FOUND)
     # Set CUDA architectures for cc_code explicitly
     set_target_properties(cc_code PROPERTIES CUDA_ARCHITECTURES "all")
 else()
+    message(STATUS "======================================")
     message(STATUS "CUDA not found. Skipping CUDA support.")
+    message(STATUS "======================================")
 endif()
 
 add_library(my_cpu_library STATIC cpu/cpu.cc)
